@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { doc, getDoc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import Comment from './Comment';
+import EnrollButton from './EnrollButton';
 
 function ClassDetail() {
   const { id } = useParams();
   const [classDetail, setClassDetail] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const fetchClassDetail = async () => {
@@ -41,8 +44,29 @@ function ClassDetail() {
       }
     };
 
-    fetchClassDetail();
-    fetchComments();
+    const checkEnrollment = async (userId) => {
+      try {
+        const enrollmentQuery = query(
+          collection(db, 'enrollments'),
+          where('userId', '==', userId),
+          where('classId', '==', id)
+        );
+        const querySnapshot = await getDocs(enrollmentQuery);
+        setIsEnrolled(!querySnapshot.empty);
+      } catch (error) {
+        console.error('Error checking enrollment: ', error);
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        checkEnrollment(user.uid);
+        fetchClassDetail();
+        fetchComments();
+      }
+    });
+
+    return () => unsubscribe();
   }, [id]);
 
   const addComment = async (parentId, text) => {
@@ -81,33 +105,43 @@ function ClassDetail() {
   return (
     <div>
       <h1>{classDetail.name}</h1>
-      <h2>Units:</h2>
-      <ul>
-        {classDetail.units ? (
-          classDetail.units.map((unit) => (
-            <li key={unit.id}>
-              <Link to={`/sessions/${unit.id}`}>{unit.name}</Link>
-            </li>
-          ))
-        ) : (
-          <li>No units available</li>
-        )}
-      </ul>
-      <h2>Comments:</h2>
-      <div>
-        <input
-          type="text"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Write a comment..."
-        />
-        <button onClick={handleAddComment}>Submit</button>
-      </div>
-      <div>
-        {comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} addReply={addComment} />
-        ))}
-      </div>
+      {!isEnrolled ? (
+        <div>
+          <p>You are not enrolled in this class. Please enroll first.</p>
+          <EnrollButton classId={id} />
+        </div>
+      ) : (
+        <>
+          <EnrollButton classId={id} />
+          <h2>Units:</h2>
+          <ul>
+            {classDetail.units ? (
+              classDetail.units.map((unit) => (
+                <li key={unit.id}>
+                  <Link to={`/sessions/${unit.id}`}>{unit.name}</Link>
+                </li>
+              ))
+            ) : (
+              <li>No units available</li>
+            )}
+          </ul>
+          <h2>Comments:</h2>
+          <div>
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Write a comment..."
+            />
+            <button onClick={handleAddComment}>Submit</button>
+          </div>
+          <div>
+            {comments.map((comment) => (
+              <Comment key={comment.id} comment={comment} addReply={addComment} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
