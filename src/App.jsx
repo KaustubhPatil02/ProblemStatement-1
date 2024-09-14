@@ -6,6 +6,7 @@ import SessionDetail from './components/SessionDetail';
 import LectureDetail from './components/LectureDetail';
 import Login from './components/Login';
 import AddClass from './components/AddClass';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -14,7 +15,11 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/classes" element={<ClassList />} />
-        <Route path="/addclass" element={<AddClass />} />
+        <Route path="/addclass" element={
+          <ProtectedRoute requiredRole="admin">
+            <AddClass />
+          </ProtectedRoute>
+        } />
         <Route path="/classes/:id" element={<ClassDetail />} />
         <Route path="/sessions/:id" element={<SessionDetail />} />
         <Route path="/lectures/:id" element={<LectureDetail />} />
