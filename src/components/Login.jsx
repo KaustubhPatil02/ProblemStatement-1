@@ -32,6 +32,8 @@ function Login() {
   };
 
   return (
+    <>
+    <h1>Login to virtual Classroom</h1>
     <form onSubmit={handleSubmit}>
       <input
         type="email"
@@ -50,6 +52,7 @@ function Login() {
       <button type="submit">Login</button>
       <button type="button" onClick={handleGoogleLogin}>Login with Google</button>
     </form>
+    </>
   );
 }
 

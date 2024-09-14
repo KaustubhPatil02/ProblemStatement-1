@@ -5,6 +5,7 @@ import { db, auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Comment from './Comment';
 import EnrollButton from './EnrollButton';
+import UnenrollButton from './UnenrollButton';
 
 function ClassDetail() {
   const { id } = useParams();
@@ -112,7 +113,7 @@ function ClassDetail() {
         </div>
       ) : (
         <>
-          <EnrollButton classId={id} />
+          <UnenrollButton classId={id} />
           <h2>Units:</h2>
           <ul>
             {classDetail.units ? (
