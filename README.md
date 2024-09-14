@@ -1,8 +1,11 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Problem Statement: Create a virtual classroom.
+## Features:
+```
+● Build a web application where an administrator/Instructor can manage classes.
+● Each class can have multiple units(Books) and sessions(Chapters).✅
+● All users can access the course material present in the session(A session can have multiple
+lectures).
+● Ability to have a discussion on a lecture similar to adding a comment and this can be
+nested. ✅
+● Only enrolled students can join the class. ✅
+```
